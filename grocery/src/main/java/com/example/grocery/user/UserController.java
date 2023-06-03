@@ -11,12 +11,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final UserService userService;
-
     @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private UserService userService;
 
     @GetMapping
     public ResponseEntity<List<User>> getAll() {
@@ -28,8 +24,8 @@ public class UserController {
         User user = userService.getById(id);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
-    @GetMapping("/{role}")
-    public ResponseEntity<List<User>> getByRole(@PathVariable RoleType roleType) {
+    @GetMapping("/role/{roleType}")
+    public ResponseEntity<List<User>> getByRole(@PathVariable String roleType) {
         List<User> users = userService.getByRole(roleType);
         return new ResponseEntity<>(users, HttpStatus.OK);
     }

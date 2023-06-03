@@ -8,12 +8,8 @@ import java.util.List;
 
 @Service
 public class UserService {
-    private final UserRepository userRepository;
-
     @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+    private UserRepository userRepository;
 
     void create(UserDTO userDTO) {
         userRepository.save(UserMapper.dtoToEntity(userDTO));
@@ -27,7 +23,7 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    List<User> getByRole(RoleType roleType) {
+    List<User> getByRole(String roleType) {
         return userRepository.findByRole(roleType).orElse(null);
     }
 
