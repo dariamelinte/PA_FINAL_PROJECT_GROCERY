@@ -26,29 +26,29 @@ public class UserService {
         return userRepository.findByRole(roleType).orElse(null);
     }
 
-    void update(String id, UserDTO userDTO){
+    void update(String id, UserDTO userDTO, Boolean override){
         User oldUser = this.getById(id);
         if (oldUser == null) return;
 
-        if (userDTO.getFirstName() != null) {
+        if (Boolean.TRUE.equals(override) || userDTO.getFirstName() != null) {
             oldUser.setFirstName(userDTO.getFirstName());
         }
-        if (userDTO.getLastName() != null) {
+        if (Boolean.TRUE.equals(override) || userDTO.getLastName() != null) {
             oldUser.setLastName(userDTO.getLastName());
         }
-        if (userDTO.getEmail() != null) {
+        if (Boolean.TRUE.equals(override) || userDTO.getEmail() != null) {
             oldUser.setEmail(userDTO.getEmail());
         }
-        if (userDTO.getPhone() != null) {
+        if (Boolean.TRUE.equals(override) || userDTO.getPhone() != null) {
             oldUser.setPhone(userDTO.getPhone());
         }
-        if (userDTO.getBirthDate() != null) {
+        if (Boolean.TRUE.equals(override) || userDTO.getBirthDate() != null) {
             oldUser.setBirthDate(userDTO.getBirthDate());
         }
-        if (userDTO.getJwt() != null) {
+        if (Boolean.TRUE.equals(override) || userDTO.getJwt() != null) {
             oldUser.setJwt(userDTO.getJwt());
         }
-        if (!userDTO.getRoles().isEmpty()) {
+        if (Boolean.TRUE.equals(override) || !userDTO.getRoles().isEmpty()) {
             oldUser.setRoles(userDTO.getRoles());
         }
 

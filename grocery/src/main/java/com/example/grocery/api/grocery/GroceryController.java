@@ -1,4 +1,4 @@
-package com.example.grocery.api.user;
+package com.example.grocery.api.grocery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,45 +10,42 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users")
-public class UserController {
+@RequestMapping("/groceries")
+public class GroceryController {
     @Autowired
-    private UserService userService;
+    private GroceryService groceryService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getAll() {
-        List<User> users = userService.getAll();
-        return new ResponseEntity<>(users, HttpStatus.OK);
+    public ResponseEntity<List<Grocery>> getAll() {
+        List<Grocery> groceries = groceryService.getAll();
+        return new ResponseEntity<>(groceries, HttpStatus.OK);
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<User> getById(@PathVariable String id) {
-        User user = userService.getById(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<Grocery> getById(@PathVariable String id) {
+        Grocery grocery = groceryService.getById(id);
+        return new ResponseEntity<>(grocery, HttpStatus.OK);
     }
-    @GetMapping("/role/{roleType}")
-    public ResponseEntity<List<User>> getByRole(@PathVariable String roleType) {
-        List<User> users = userService.getByRole(roleType);
-        return new ResponseEntity<>(users, HttpStatus.OK);
-    }
+
     @PostMapping
-    public ResponseEntity<User> create(@RequestBody UserDTO userDTO) {
-        userService.create(userDTO);
+    public ResponseEntity<Grocery> create(@RequestBody GroceryDTO groceryDTO) {
+        groceryService.create(groceryDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @RequestMapping(method = {RequestMethod.PUT, RequestMethod.PATCH}, path = "/{id}")
-    public ResponseEntity update(@PathVariable String id, @RequestBody UserDTO userDTO) {
+    public ResponseEntity update(@PathVariable String id, @RequestBody GroceryDTO groceryDTO) {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         String httpMethod = requestAttributes.getRequest().getMethod();
         boolean override = httpMethod.equals("PUT");
 
-        userService.update(id, userDTO, override);
+        groceryService.update(id, groceryDTO, override);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable String id) {
-        userService.delete(id);
+        groceryService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
