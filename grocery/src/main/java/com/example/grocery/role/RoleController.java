@@ -39,7 +39,7 @@ public class RoleController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public ResponseEntity delete(@PathVariable String id){
         roleService.delete(id);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);

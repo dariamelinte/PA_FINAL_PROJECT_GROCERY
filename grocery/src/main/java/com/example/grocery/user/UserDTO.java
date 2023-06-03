@@ -1,6 +1,6 @@
 package com.example.grocery.user;
 
-import com.example.grocery.enums.RoleTypes;
+import com.example.grocery.enums.RoleType;
 import lombok.Data;
 
 import java.util.Date;
@@ -15,5 +15,5 @@ public class UserDTO {
     private Date birthDate;
     private String hashedPassword;
     private String jwt;
-    private List<RoleTypes> roles;
+    private List<RoleType> roles;
 }

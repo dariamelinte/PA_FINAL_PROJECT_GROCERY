@@ -1,9 +1,12 @@
 package com.example.grocery.user;
 
+import com.example.grocery.enums.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class UserService {
     private final UserRepository userRepository;
 
@@ -22,6 +25,10 @@ public class UserService {
 
     User getById(String id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    List<User> getByRole(RoleType roleType) {
+        return userRepository.findByRole(roleType).orElse(null);
     }
 
     void update(String id, UserDTO userDTO){

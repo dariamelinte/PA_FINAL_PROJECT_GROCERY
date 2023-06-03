@@ -1,16 +1,16 @@
 package com.example.grocery.user;
 
-import com.example.grocery.enums.RoleTypes;
+import com.example.grocery.enums.RoleType;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
 import java.util.List;
 
-@Entity
 @Data
+@Document(collection = "users")
 public class User {
     @Id @GeneratedValue private Long id;
     private String email;
@@ -20,5 +20,5 @@ public class User {
     private Date birthDate;
     private String hashedPassword;
     private String jwt;
-    private List<RoleTypes> roles;
+    private List<RoleType> roles;
 }
