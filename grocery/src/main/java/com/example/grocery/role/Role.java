@@ -1,13 +1,11 @@
 package com.example.grocery.role;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
 @Data
+@Document(collection = "roles")
 public class Role {
-    @Id
     String id;
     String name;
 }
