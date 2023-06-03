@@ -1,5 +1,8 @@
 package com.example.grocery.role;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class RoleMapper {
     public static Role dtoToEntity(RoleDTO roleDTO) {
         Role role = new Role();

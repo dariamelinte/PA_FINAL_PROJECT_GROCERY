@@ -22,7 +22,7 @@ public class RoleController {
         List<Role> roles = roleService.getAll();
         return new ResponseEntity<>(roles, HttpStatus.OK);
     }
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     public ResponseEntity<Role> getById(@PathVariable String id) {
         var role = roleService.getById(id);
         return new ResponseEntity<>(role, HttpStatus.OK);
@@ -33,10 +33,15 @@ public class RoleController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @PutMapping("/id")
+    @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable String id,@RequestBody RoleDTO dto){
         roleService.update(id, dto);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @DeleteMapping("/id")
+    public ResponseEntity delete(@PathVariable String id){
+        roleService.delete(id);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
