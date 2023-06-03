@@ -1,4 +1,4 @@
-package com.example.grocery.api.products;
+package com.example.grocery.api.product;
 
 import lombok.Data;
 
