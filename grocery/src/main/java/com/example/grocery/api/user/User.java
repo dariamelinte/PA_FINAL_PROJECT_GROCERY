@@ -1,4 +1,4 @@
-package com.example.grocery.user;
+package com.example.grocery.api.user;
 
 import com.example.grocery.enums.RoleType;
 import lombok.Data;

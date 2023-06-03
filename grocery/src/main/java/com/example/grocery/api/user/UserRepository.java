@@ -1,6 +1,5 @@
-package com.example.grocery.user;
+package com.example.grocery.api.user;
 
-import com.example.grocery.enums.RoleType;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;

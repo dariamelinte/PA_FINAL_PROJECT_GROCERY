@@ -1,4 +1,4 @@
-package com.example.grocery.user;
+package com.example.grocery.api.user;
 
 import com.example.grocery.enums.RoleType;
 import lombok.Data;
@@ -13,7 +13,7 @@ public class UserDTO {
     private String lastName;
     private String phone;
     private Date birthDate;
-    private String hashedPassword;
+    private String password;
     private String jwt;
     private List<RoleType> roles;
 }

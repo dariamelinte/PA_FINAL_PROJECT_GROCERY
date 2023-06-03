@@ -1,6 +1,5 @@
-package com.example.grocery.user;
+package com.example.grocery.api.user;
 
-import com.example.grocery.enums.RoleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

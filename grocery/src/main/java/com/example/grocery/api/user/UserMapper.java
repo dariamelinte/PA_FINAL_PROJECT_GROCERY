@@ -1,4 +1,6 @@
-package com.example.grocery.user;
+package com.example.grocery.api.user;
+
+import com.example.grocery.utils.Hash;
 
 public class UserMapper {
     public static User dtoToEntity(UserDTO userDTO) {
@@ -8,7 +10,7 @@ public class UserMapper {
         user.setEmail(userDTO.getEmail());
         user.setPhone(userDTO.getPhone());
         user.setBirthDate(userDTO.getBirthDate());
-        user.setHashedPassword(userDTO.getHashedPassword());
+        user.setHashedPassword(Hash.sha512(userDTO.getPassword()));
         user.setJwt(userDTO.getJwt());
         user.setRoles(userDTO.getRoles());
         return user;
@@ -21,7 +23,7 @@ public class UserMapper {
         userDTO.setEmail(user.getEmail());
         userDTO.setPhone(user.getPhone());
         userDTO.setBirthDate(user.getBirthDate());
-        userDTO.setHashedPassword(user.getHashedPassword());
+        userDTO.setPassword(user.getHashedPassword());
         userDTO.setJwt(user.getJwt());
         userDTO.setRoles(user.getRoles());
         return userDTO;
