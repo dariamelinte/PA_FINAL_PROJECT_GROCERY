@@ -26,7 +26,11 @@ public class UserService {
         return userRepository.findByRole(roleType).orElse(null);
     }
 
-    void update(String id, UserDTO userDTO, Boolean override){
+    public User getByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+    public void update(String id, UserDTO userDTO, Boolean override){
         User oldUser = this.getById(id);
         if (oldUser == null) return;
 

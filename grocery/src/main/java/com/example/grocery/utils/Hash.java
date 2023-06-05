@@ -18,11 +18,8 @@ public class Hash {
                 }
                 hexString.append(hex);
             }
-
-            String sha512Hash = hexString.toString();
-            System.out.println("SHA-512 Hash: " + sha512Hash);
-
-            return sha512Hash;
+            
+            return hexString.toString();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
             return null;
