@@ -1,17 +1,20 @@
 package com.example.grocery.api.auth;
 
 
+import com.example.grocery.api.auth.forgotPassword.ForgotPasswordDTO;
 import com.example.grocery.api.auth.login.LoginDTO;
 import com.example.grocery.api.auth.register.RegisterDTO;
 import com.example.grocery.api.auth.register.RegisterMapper;
 import com.example.grocery.api.user.*;
 import com.example.grocery.utils.Hash;
 import com.example.grocery.utils.Response;
+import com.example.grocery.utils.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import static com.example.grocery.utils.JwtUtils.*;
 
@@ -19,6 +22,10 @@ import static com.example.grocery.utils.JwtUtils.*;
 public class AuthService {
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private EmailService emailService;
 
     public Response<User> login(LoginDTO loginDTO) {
         Response<User> response = new Response<>();
@@ -83,7 +90,6 @@ public class AuthService {
 
     public Response<User> logout(String bearerToken) {
         Response<User> response = new Response<>();
-        response.setStatus(HttpStatus.OK);
 
         String userId = getUserIdFromJwtToken(bearerToken);
 
@@ -102,11 +108,34 @@ public class AuthService {
         }
 
         user.setJwt(null);
-        userService.update(userId, UserMapper.entityToDto(user), true);
+        userRepository.save(user);
 
         response.setStatus(HttpStatus.OK);
         response.setMessage("Logout successful");
         response.setData(userService.getById(userId));
+
+        return response;
+    }
+
+    public Response<User> forgotPassword(ForgotPasswordDTO forgotPasswordDTO) {
+        Response<User> response = new Response<>();
+        response.setStatus(HttpStatus.OK);
+
+        User user = userService.getByEmail(forgotPasswordDTO.getEmail());
+
+        String token = UUID.randomUUID().toString();
+
+        user.setHashedPassword(Hash.sha512(token));
+        userRepository.save(user);
+
+        emailService.sendMail(
+                "petrisorvmy607@gmail.com",
+                forgotPasswordDTO.getEmail(),
+                "Reset Password",
+                token);
+
+        response.setStatus(HttpStatus.OK);
+        response.setMessage("An email has been successfully sent.");
 
         return response;
     }
