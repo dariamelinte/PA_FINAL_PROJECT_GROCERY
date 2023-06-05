@@ -16,12 +16,13 @@ public class ProductService {
 
     Product getById(String id) { return productRepository.findById(id).orElse(null);}
 
-    void update(String id, ProductDTO dto){
+    void update(String id, ProductDTO dto, Boolean override){
         var prod = this.getById(id);
         if(prod == null) return;
 
-        if(dto.getDescription() != null) prod.setDescription(dto.getDescription());
-        if(dto.getName() != null) prod.setName(dto.getName());
+        if(Boolean.TRUE.equals(override) || dto.getDescription() != null) prod.setDescription(dto.getDescription());
+        if(Boolean.TRUE.equals(override) || dto.getName() != null) prod.setName(dto.getName());
+        if(Boolean.TRUE.equals(override) || dto.getCategories() != null) prod.setCategories(dto.getCategories());
 
         productRepository.save(prod);
     }

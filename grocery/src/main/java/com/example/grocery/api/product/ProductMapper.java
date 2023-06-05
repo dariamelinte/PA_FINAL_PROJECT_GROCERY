@@ -5,6 +5,7 @@ public class ProductMapper {
         var prod = new Product();
         prod.setName(dto.getName());
         prod.setDescription(dto.getDescription());
+        prod.setCategories(dto.getCategories());
         return prod;
     }
 }
