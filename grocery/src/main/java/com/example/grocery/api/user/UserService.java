@@ -52,7 +52,7 @@ public class UserService {
         if (Boolean.TRUE.equals(override) || userDTO.getJwt() != null) {
             oldUser.setJwt(userDTO.getJwt());
         }
-        if (Boolean.TRUE.equals(override) || !userDTO.getRoles().isEmpty()) {
+        if (Boolean.TRUE.equals(override) || (userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) ) {
             oldUser.setRoles(userDTO.getRoles());
         }
 
