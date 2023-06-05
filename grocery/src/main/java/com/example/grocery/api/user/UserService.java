@@ -10,7 +10,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    void create(UserDTO userDTO) {
+    public void create(UserDTO userDTO) {
         userRepository.save(UserMapper.dtoToEntity(userDTO));
     }
 
