@@ -16,13 +16,14 @@ public class ProductGroceriesService {
 
     ProductGroceries getById(String id) { return  repository.findById(id).orElse(null);}
 
-    void update(String id, ProductGroceriesDTO dto){
+    void update(String id, ProductGroceriesDTO dto, Boolean override){
         var entity = this.getById(id);
         if( entity == null) return;
 
-        if(dto.getProductId() != null) entity.setProductId(dto.getProductId());
-        if(dto.getGroceryId() != null) entity.setGroceryId(dto.getGroceryId());
-        if(dto.getSellType() != null) entity.setSellType(dto.getSellType());
+        if(Boolean.TRUE.equals(override) || dto.getProductId() != null) entity.setProductId(dto.getProductId());
+        if(Boolean.TRUE.equals(override) || dto.getGroceryId() != null) entity.setGroceryId(dto.getGroceryId());
+        if(Boolean.TRUE.equals(override) || dto.getSellType() != null) entity.setSellType(dto.getSellType());
+        if(Boolean.TRUE.equals(override) || dto.getBuyPrice() != null) entity.setBuyPrice(dto.getBuyPrice());
 
         repository.save(entity);
     }

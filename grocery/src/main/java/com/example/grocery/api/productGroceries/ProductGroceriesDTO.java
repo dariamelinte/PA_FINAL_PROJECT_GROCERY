@@ -8,4 +8,7 @@ public class ProductGroceriesDTO {
     private String groceryId;
     private String productId;
     private SellType sellType;
+
+    private Integer sellPrice;
+    private Integer buyPrice;
 }

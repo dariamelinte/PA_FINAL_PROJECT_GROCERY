@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.List;
 
@@ -25,9 +27,12 @@ public class ProductGroceriesController {
     public ResponseEntity<ProductGroceries> getById(@PathVariable String id) { return new ResponseEntity<>(service.getById(id), HttpStatus.OK);}
 
 
-    @PutMapping("/{id}")
+    @RequestMapping(method = {RequestMethod.PUT, RequestMethod.PATCH}, path = "/{id}")
     public  ResponseEntity update(@PathVariable String id, @RequestBody ProductGroceriesDTO dto){
-        service.update(id, dto);
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        String httpMethod = requestAttributes.getRequest().getMethod();
+        boolean override = httpMethod.equals("PUT");
+        service.update(id, dto, override);
         return new ResponseEntity(HttpStatus.OK);
     }
 
