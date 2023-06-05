@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
-import static com.example.grocery.utils.JwtUtils.generateToken;
+import static com.example.grocery.utils.JwtUtils.*;
 
 @Service
 public class AuthService {
@@ -49,7 +49,6 @@ public class AuthService {
         return response;
     }
 
-
     public Response<User> register(RegisterDTO registerDTO) {
         Response<User> response = new Response<>();
 
@@ -82,4 +81,33 @@ public class AuthService {
         return response;
     }
 
+    public Response<User> logout(String bearerToken) {
+        Response<User> response = new Response<>();
+        response.setStatus(HttpStatus.OK);
+
+        String userId = getUserIdFromJwtToken(bearerToken);
+
+        User user = userService.getById(userId);
+
+        if (user == null) {
+            response.setStatus(HttpStatus.NOT_FOUND);
+            response.setMessage("User not found.");
+            return response;
+        }
+
+        if (!Objects.equals(user.getJwt(), parseJwt(bearerToken))) {
+            response.setStatus(HttpStatus.CONFLICT);
+            response.setMessage("Invalid JWT. Cannot logout.");
+            return response;
+        }
+
+        user.setJwt(null);
+        userService.update(userId, UserMapper.entityToDto(user), true);
+
+        response.setStatus(HttpStatus.OK);
+        response.setMessage("Logout successful");
+        response.setData(userService.getById(userId));
+
+        return response;
+    }
 }
