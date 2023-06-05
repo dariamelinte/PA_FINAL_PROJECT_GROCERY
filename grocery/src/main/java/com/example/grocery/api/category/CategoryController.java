@@ -30,7 +30,7 @@ public class CategoryController {
         return new ResponseEntity<>(entity, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity update(@PathVariable String id, @RequestBody CategoryDTO dto){
         categoryService.update(id, dto);
         return new ResponseEntity<>(HttpStatus.OK);
