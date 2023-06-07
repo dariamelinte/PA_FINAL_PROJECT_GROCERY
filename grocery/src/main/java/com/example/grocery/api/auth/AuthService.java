@@ -96,26 +96,26 @@ public class AuthService {
 
         String userId = jwtUtils.getUserIdFromJwtToken(bearerToken);
 
-        User user = userService.getById(userId);
+        Response<User> userResponse = userService.getById(userId);
 
-        if (user == null) {
+        if (userResponse.getData() == null) {
             response.setStatus(HttpStatus.NOT_FOUND);
             response.setMessage("User not found.");
             return response;
         }
 
-        if (!Objects.equals(user.getJwt(), jwtUtils.parseJwt(bearerToken))) {
+        if (!Objects.equals(userResponse.getData().getJwt(), jwtUtils.parseJwt(bearerToken))) {
             response.setStatus(HttpStatus.CONFLICT);
             response.setMessage("Invalid JWT. Cannot logout.");
             return response;
         }
 
-        user.setJwt(null);
-        userRepository.save(user);
+        userResponse.getData().setJwt(null);
+        userRepository.save(userResponse.getData());
 
         response.setStatus(HttpStatus.OK);
         response.setMessage("Logout successful");
-        response.setData(userService.getById(userId));
+        response.setData(userService.getById(userId).getData());
 
         return response;
     }

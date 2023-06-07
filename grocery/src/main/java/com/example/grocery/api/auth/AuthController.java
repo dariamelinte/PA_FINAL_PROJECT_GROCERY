@@ -35,7 +35,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Response<User>> logout(@RequestHeader("Authorization") String bearerToken) {
-        if (!jwtUtils.isUserAuthorized(bearerToken)) {
+        if (!jwtUtils.isAuthorized(bearerToken)) {
             Response<User> response = new Response<>();
             response.setStatus(HttpStatus.UNAUTHORIZED);
             response.setMessage("Invalid JWT");
