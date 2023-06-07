@@ -43,8 +43,8 @@ public class StatsService {
             var product = productGroceriesService.getById(tranzaction.getProductGroceryId());
 
             double profit = tranzaction.getTranzactionType() == TranzactionType.BUY
-                    ? -1 * tranzaction.getQuantity() * product.getBuyPrice()
-                    : tranzaction.getQuantity() * product.getSellPrice();
+                    ? -1 * tranzaction.getQuantity() * product.getData().getBuyPrice()
+                    : tranzaction.getQuantity() * product.getData().getSellPrice();
 
             values[index] += profit;
         }
@@ -70,8 +70,8 @@ public class StatsService {
             var product = productGroceriesService.getById(tranzaction.getProductGroceryId());
 
             double profit = tranzaction.getTranzactionType() == TranzactionType.BUY
-                    ? -1 * tranzaction.getQuantity() * product.getBuyPrice()
-                    : tranzaction.getQuantity() * product.getSellPrice();
+                    ? -1 * tranzaction.getQuantity() * product.getData().getBuyPrice()
+                    : tranzaction.getQuantity() * product.getData().getSellPrice();
 
             values[index] += profit;
         }
