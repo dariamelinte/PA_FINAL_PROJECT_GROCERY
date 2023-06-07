@@ -20,6 +20,17 @@ public class TranzactionController {
         List<Tranzaction> tranzactions = tranzactionService.getAll();
         return new ResponseEntity<>(tranzactions, HttpStatus.OK);
     }
+    @PostMapping("/user/{id}")
+    public ResponseEntity<List<Tranzaction>> getByDateAndUser(@PathVariable String id, @RequestBody DateInterval interval) {
+        List<Tranzaction> tranzactions = tranzactionService.getByDateAndUser(id, interval.getStartDate(), interval.getEndDate());
+        return new ResponseEntity<>(tranzactions, HttpStatus.OK);
+    }
+
+    @PostMapping("/grocery/{id}")
+    public ResponseEntity<List<Tranzaction>> getByDateAndGrocery(@PathVariable String id, @RequestBody DateInterval interval) {
+        List<Tranzaction> tranzactions = tranzactionService.getByDateAndGrocery(id, interval.getStartDate(), interval.getEndDate());
+        return new ResponseEntity<>(tranzactions, HttpStatus.OK);
+    }
     @GetMapping("/{id}")
     public ResponseEntity<Tranzaction> getById(@PathVariable String id) {
         Tranzaction tranzaction = tranzactionService.getById(id);
