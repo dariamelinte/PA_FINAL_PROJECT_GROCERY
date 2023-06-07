@@ -39,7 +39,7 @@ public class ProductController {
     public ResponseEntity<Response<Product>> create(
             @RequestHeader("Authorization") String bearerToken,
             @RequestBody ProductDTO productDTO) {
-        if (!jwtUtils.isUserAuthorized(bearerToken)) {
+        if (!jwtUtils.isAuthorized(bearerToken)) {
             Response<Product> response = new Response<>();
             response.setStatus(HttpStatus.UNAUTHORIZED);
             response.setMessage(noAccessAllowed);

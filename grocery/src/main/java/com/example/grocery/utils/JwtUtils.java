@@ -83,7 +83,7 @@ public class JwtUtils {
         return false;
     }
 
-    public boolean isUserAuthorized(String bearerToken) {
+    public boolean isAuthorized(String bearerToken) {
         String userId = getUserIdFromJwtToken(bearerToken);
 
         if (userId == null) {
@@ -100,7 +100,7 @@ public class JwtUtils {
     }
 
     public boolean isRoleAuthorized(String bearerToken, RoleType roleType) {
-        if (!isUserAuthorized(bearerToken)) {
+        if (!isAuthorized(bearerToken)) {
             return false;
         }
 
@@ -140,5 +140,19 @@ public class JwtUtils {
         if(user == null) return false;
 
         return Objects.equals(grocery.getUserId(), user.getId());
+    }
+    
+    public boolean isUserAuthorized(String userId, String bearerToken) {
+        if (!isRoleAuthorized(bearerToken, RoleType.ADMIN)) {
+            return false;
+        }
+
+        User user = userRepository.findById(getUserIdFromJwtToken(bearerToken)).orElse(null);
+
+        if (user == null) {
+            return false;
+        }
+
+        return Objects.equals(user.getId(), userId);
     }
 }
