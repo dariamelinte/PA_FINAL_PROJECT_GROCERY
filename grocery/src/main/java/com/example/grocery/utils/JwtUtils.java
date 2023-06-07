@@ -1,6 +1,10 @@
 package com.example.grocery.utils;
 
+import com.example.grocery.api.grocery.Grocery;
+import com.example.grocery.api.grocery.GroceryRepository;
+import com.example.grocery.api.grocery.GroceryService;
 import com.example.grocery.api.user.User;
+import com.example.grocery.api.user.UserRepository;
 import com.example.grocery.api.user.UserService;
 import com.example.grocery.enums.RoleType;
 import io.jsonwebtoken.*;
@@ -9,8 +13,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -23,7 +25,9 @@ import java.util.Objects;
 @ComponentScan("com.example.grocery.api")
 public class JwtUtils {
     @Autowired
-    UserService userService;
+    UserRepository userRepository;
+    @Autowired
+    GroceryRepository groceryRepository;
     private final String key = "grocery_jwt_key";
 
     public String generateToken(String userId) {
@@ -81,7 +85,7 @@ public class JwtUtils {
             return false;
         }
 
-        User user = userService.getById(userId);
+        User user = userRepository.findById(userId).orElse(null);
 
         if (user == null) {
             return false;
@@ -95,8 +99,23 @@ public class JwtUtils {
             return false;
         }
 
-        User user = userService.getById(getUserIdFromJwtToken(bearerToken));
+        User user = userRepository.findById(getUserIdFromJwtToken(bearerToken)).orElse(null);
 
         return user.getRoles().contains(RoleType.ADMIN);
+    }
+
+    public boolean isGroceryAuthorized(String groceryId, String bearerToken) {
+        if (!isAdminAuthorized(bearerToken)) {
+            return false;
+        }
+
+        User user = userRepository.findById(getUserIdFromJwtToken(bearerToken)).orElse(null);
+        Grocery grocery = groceryRepository.findById(groceryId).orElse(null);
+
+        if (user == null || grocery == null) {
+            return false;
+        }
+
+        return Objects.equals(grocery.getUserId(), user.getId());
     }
 }
