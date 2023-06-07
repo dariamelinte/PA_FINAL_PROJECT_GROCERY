@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface UserRepository extends MongoRepository<User, String> {
     @Query("{ 'roles': {\"$in\": [?0]}}")
     Optional<List<User>> findByRole(String roleType);
+
+    Optional<User> findByEmail(String email);
 }

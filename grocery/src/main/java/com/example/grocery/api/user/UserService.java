@@ -10,7 +10,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    void create(UserDTO userDTO) {
+    public void create(UserDTO userDTO) {
         userRepository.save(UserMapper.dtoToEntity(userDTO));
     }
 
@@ -18,7 +18,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    User getById(String id) {
+    public User getById(String id) {
         return userRepository.findById(id).orElse(null);
     }
 
@@ -26,7 +26,11 @@ public class UserService {
         return userRepository.findByRole(roleType).orElse(null);
     }
 
-    void update(String id, UserDTO userDTO, Boolean override){
+    public User getByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+    public void update(String id, UserDTO userDTO, Boolean override){
         User oldUser = this.getById(id);
         if (oldUser == null) return;
 
@@ -48,7 +52,7 @@ public class UserService {
         if (Boolean.TRUE.equals(override) || userDTO.getJwt() != null) {
             oldUser.setJwt(userDTO.getJwt());
         }
-        if (Boolean.TRUE.equals(override) || !userDTO.getRoles().isEmpty()) {
+        if (Boolean.TRUE.equals(override) || (userDTO.getRoles() != null && !userDTO.getRoles().isEmpty()) ) {
             oldUser.setRoles(userDTO.getRoles());
         }
 
