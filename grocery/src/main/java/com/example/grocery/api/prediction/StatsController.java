@@ -1,5 +1,6 @@
 package com.example.grocery.api.prediction;
 
+import com.example.grocery.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,14 +14,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class StatsController {
     @Autowired
     StatsService statsService;
-    @GetMapping("/product/{id}")
-    public ResponseEntity<double[]> getForecast(@PathVariable String id){
-        return new ResponseEntity(statsService.prediction(id, 3), HttpStatus.OK);
+    @GetMapping("/product/{id}/{months}")
+    public ResponseEntity<Response<double[]>> getForecast(@PathVariable String id, @PathVariable int months){
+        return new ResponseEntity(statsService.prediction(id, months), HttpStatus.OK);
     }
 
 
-    @GetMapping("/grocery/{id}")
-    public ResponseEntity<double[]> getForecastForGrocery(@PathVariable String id){
-        return new ResponseEntity(statsService.predictionForGrocery(id, 3), HttpStatus.OK);
+    @GetMapping("/grocery/{id}/{months}")
+    public ResponseEntity<Response<double[]>> getForecastForGrocery(@PathVariable String id, @PathVariable int months){
+        return new ResponseEntity(statsService.predictionForGrocery(id, months), HttpStatus.OK);
     }
 }
