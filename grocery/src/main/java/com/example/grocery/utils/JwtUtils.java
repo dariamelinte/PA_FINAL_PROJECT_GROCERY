@@ -1,18 +1,31 @@
 package com.example.grocery.utils;
 
+import com.example.grocery.api.user.User;
+import com.example.grocery.api.user.UserService;
 import io.jsonwebtoken.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
 
 @Data
+@Component
+@NoArgsConstructor
+@AllArgsConstructor
+@ComponentScan("com.example.grocery.api")
 public class JwtUtils {
-    private static final String key = "grocery_jwt_key";
+    @Autowired
+    UserService userService;
+    private final String key = "grocery_jwt_key";
 
-    public static String generateToken(String userId) {
+    public String generateToken(String userId) {
         Date expiryDate = new Date(new Date().getTime() + 1000 * 60 * 60 * 3); // Token valid for 3 hour
 
         return Jwts.builder()
@@ -23,7 +36,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    public static String parseJwt(String bearerToken) {
+    public String parseJwt(String bearerToken) {
         if (!bearerToken.startsWith("Bearer ")) {
             return null;
         }
@@ -31,19 +44,19 @@ public class JwtUtils {
         return bearerToken.substring(7, bearerToken.length());
     }
 
-    public static String getUserIdFromJwtToken(String bearerToken) {
+    public String getUserIdFromJwtToken(String bearerToken) {
         String token = parseJwt(bearerToken);
 
-        if (token == null) {
+        if (token == null || !validateJwtToken(token)) {
             return null;
         }
 
         return Jwts.parser().setSigningKey(key).parseClaimsJws(token).getBody().getSubject();
     }
 
-    public static boolean validateJwtToken(String authToken) {
+    public boolean validateJwtToken(String bearerToken) {
         try {
-            Jwts.parser().setSigningKey(key).parseClaimsJws(authToken);
+            Jwts.parser().setSigningKey(key).parseClaimsJws(bearerToken);
             return true;
         } catch (SignatureException e) {
             System.out.println("Invalid JWT signature: " + e.getMessage());
@@ -58,5 +71,33 @@ public class JwtUtils {
         }
 
         return false;
+    }
+
+    public boolean isAuthorized(String bearerToken) {
+        String userId = getUserIdFromJwtToken(bearerToken);
+
+        if (userId == null) {
+            return false;
+        }
+
+        User user = userService.getById(userId);
+
+        if (user == null) {
+            return false;
+        }
+
+        return Objects.equals(user.getJwt(), parseJwt(bearerToken));
+    }
+
+    public <T> ResponseEntity<Response<T>> getNonAuthorizedResponse(String bearerToken) {
+        if (!isAuthorized(bearerToken)) {
+            Response<T> response = new Response<>();
+            response.setStatus(HttpStatus.UNAUTHORIZED);
+            response.setMessage("Invalid JWT");
+
+            return new ResponseEntity<>(response, response.getStatus());
+        }
+
+        return null;
     }
 }

@@ -7,6 +7,7 @@ import com.example.grocery.api.auth.register.RegisterDTO;
 import com.example.grocery.api.auth.register.RegisterMapper;
 import com.example.grocery.api.user.*;
 import com.example.grocery.utils.Hash;
+import com.example.grocery.utils.JwtUtils;
 import com.example.grocery.utils.Response;
 import com.example.grocery.utils.email.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public class AuthService {
     @Autowired
     private EmailService emailService;
 
+    JwtUtils jwtUtils = new JwtUtils();
+
     public Response<User> login(LoginDTO loginDTO) {
         Response<User> response = new Response<>();
         User user = userService.getByEmail(loginDTO.getEmail());
@@ -46,7 +49,7 @@ public class AuthService {
         }
 
         UserDTO userDTO = new UserDTO();
-        userDTO.setJwt(generateToken(user.getId()));
+        userDTO.setJwt(jwtUtils.generateToken(user.getId()));
 
         userService.update(user.getId(), userDTO, false);
 
@@ -78,7 +81,7 @@ public class AuthService {
 
 
         UserDTO userDTO = new UserDTO();
-        userDTO.setJwt(generateToken(user.getId()));
+        userDTO.setJwt(jwtUtils.generateToken(user.getId()));
 
         userService.update(user.getId(), userDTO, false);
 
@@ -91,7 +94,7 @@ public class AuthService {
     public Response<User> logout(String bearerToken) {
         Response<User> response = new Response<>();
 
-        String userId = getUserIdFromJwtToken(bearerToken);
+        String userId = jwtUtils.getUserIdFromJwtToken(bearerToken);
 
         User user = userService.getById(userId);
 
@@ -101,7 +104,7 @@ public class AuthService {
             return response;
         }
 
-        if (!Objects.equals(user.getJwt(), parseJwt(bearerToken))) {
+        if (!Objects.equals(user.getJwt(), jwtUtils.parseJwt(bearerToken))) {
             response.setStatus(HttpStatus.CONFLICT);
             response.setMessage("Invalid JWT. Cannot logout.");
             return response;
