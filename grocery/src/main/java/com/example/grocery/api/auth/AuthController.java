@@ -4,17 +4,22 @@ import com.example.grocery.api.auth.forgotPassword.ForgotPasswordDTO;
 import com.example.grocery.api.auth.login.LoginDTO;
 import com.example.grocery.api.auth.register.RegisterDTO;
 import com.example.grocery.api.user.User;
+import com.example.grocery.api.user.UserService;
+import com.example.grocery.utils.JwtUtils;
 import com.example.grocery.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
     @Autowired
     AuthService authService;
+    @Autowired
+    JwtUtils jwtUtils;
 
     @PostMapping("/login")
     public ResponseEntity<Response<User>> login(@RequestBody LoginDTO loginDTO) {
@@ -30,6 +35,14 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Response<User>> logout(@RequestHeader("Authorization") String bearerToken) {
+        if (!jwtUtils.isUserAuthorized(bearerToken)) {
+            Response<User> response = new Response<>();
+            response.setStatus(HttpStatus.UNAUTHORIZED);
+            response.setMessage("Invalid JWT");
+
+            return new ResponseEntity<>(response, response.getStatus());
+        }
+
         Response<User> response = authService.logout(bearerToken);
         return new ResponseEntity<>(response, response.getStatus());
     }
