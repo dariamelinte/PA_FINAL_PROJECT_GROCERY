@@ -14,7 +14,9 @@ public class ProductGroceriesService {
 
     List<ProductGroceries> getAll() { return  repository.findAll(); }
 
-    ProductGroceries getById(String id) { return  repository.findById(id).orElse(null);}
+    public List<ProductGroceries> getByGroceryId(String groceryId) { return repository.findByGroceryId(groceryId);}
+
+    public ProductGroceries getById(String id) { return  repository.findById(id).orElse(null);}
 
     void update(String id, ProductGroceriesDTO dto, Boolean override){
         var entity = this.getById(id);
