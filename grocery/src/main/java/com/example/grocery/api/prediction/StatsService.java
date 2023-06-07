@@ -80,14 +80,14 @@ public class StatsService {
 
     public double[] prediction(String productGroceryId, int months){
         var values = getMonthArray(productGroceryId);
-        var algorithm = new SARIMA(1, 1, 1, 12);
+        var algorithm = new SARIMA();
         double[] forecast = algorithm.fit(values, months);
         return forecast;
     }
 
     public double[] predictionForGrocery(String groceryId, int months){
         var values = getMonthArrayForGrocery(groceryId);
-        var algorithm = new SARIMA(1, 1, 1, 12);
+        var algorithm = new SARIMA();
         double[] forecast = algorithm.fit(values, months);
         return forecast;
     }
