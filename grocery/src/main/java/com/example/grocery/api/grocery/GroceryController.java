@@ -1,5 +1,6 @@
 package com.example.grocery.api.grocery;
 
+import com.example.grocery.enums.RoleType;
 import com.example.grocery.utils.JwtUtils;
 import com.example.grocery.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +38,17 @@ public class GroceryController {
     public ResponseEntity<Response<Grocery>> create(
             @RequestHeader("Authorization") String bearerToken,
             @RequestBody GroceryDTO groceryDTO) {
-        if (!jwtUtils.isUserAuthorized(bearerToken)) {
-            Response<Grocery> response = new Response<>();
-            response.setStatus(HttpStatus.UNAUTHORIZED);
-            response.setMessage(noAccessAllowed);
-
+        boolean isAuth = jwtUtils.isRoleAuthorized(bearerToken, RoleType.ADMIN) ||
+                jwtUtils.isRoleAuthorized(bearerToken, RoleType.SHOP_OWNER);
+        if (isAuth) {
+            Response<Grocery> response = groceryService.create(groceryDTO);
             return new ResponseEntity<>(response, response.getStatus());
         }
 
-        Response<Grocery> response = groceryService.create(groceryDTO);
+        Response<Grocery> response = new Response<>();
+        response.setStatus(HttpStatus.UNAUTHORIZED);
+        response.setMessage(noAccessAllowed);
+
         return new ResponseEntity<>(response, response.getStatus());
     }
 
