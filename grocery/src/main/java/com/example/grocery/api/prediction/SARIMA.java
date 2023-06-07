@@ -18,14 +18,14 @@ public class SARIMA {
         double[] residual = fitNonSeasonalComponent(data, seasonalComponent);
 
         for (int i = 0; i < n; i++) {
-            forecast[i] = seasonalComponent[i % seasonalPeriod] + residual[i];
+            forecast[i] = 0.6 * seasonalComponent[i % seasonalPeriod] + 0.4 * residual[i];
         }
 
         for (int i = n; i < totalPeriods; i++) {
             int seasonIndex = i % seasonalPeriod;
             int prevSeasonIndex = (i - seasonalPeriod) % seasonalPeriod;
-            forecast[i] = seasonalComponent[seasonIndex] + residual[n - seasonalPeriod + seasonIndex]
-                    + (forecast[i - seasonalPeriod] - seasonalComponent[prevSeasonIndex]);
+            forecast[i] = 0.6 * seasonalComponent[seasonIndex] + 0.4 * residual[n - seasonalPeriod + seasonIndex]
+                    + (0.6 * forecast[i - seasonalPeriod] - 0.6 * seasonalComponent[prevSeasonIndex]);
         }
 
         return Arrays.copyOfRange(forecast, n, totalPeriods);
