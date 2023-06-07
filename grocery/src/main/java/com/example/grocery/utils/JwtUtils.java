@@ -2,6 +2,7 @@ package com.example.grocery.utils;
 
 import com.example.grocery.api.user.User;
 import com.example.grocery.api.user.UserService;
+import com.example.grocery.enums.RoleType;
 import io.jsonwebtoken.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -73,7 +74,7 @@ public class JwtUtils {
         return false;
     }
 
-    public boolean isAuthorized(String bearerToken) {
+    public boolean isUserAuthorized(String bearerToken) {
         String userId = getUserIdFromJwtToken(bearerToken);
 
         if (userId == null) {
@@ -89,15 +90,13 @@ public class JwtUtils {
         return Objects.equals(user.getJwt(), parseJwt(bearerToken));
     }
 
-    public <T> ResponseEntity<Response<T>> getNonAuthorizedResponse(String bearerToken) {
-        if (!isAuthorized(bearerToken)) {
-            Response<T> response = new Response<>();
-            response.setStatus(HttpStatus.UNAUTHORIZED);
-            response.setMessage("Invalid JWT");
-
-            return new ResponseEntity<>(response, response.getStatus());
+    public boolean isAdminAuthorized(String bearerToken) {
+        if (!isUserAuthorized(bearerToken)) {
+            return false;
         }
 
-        return null;
+        User user = userService.getById(getUserIdFromJwtToken(bearerToken));
+
+        return user.getRoles().contains(RoleType.ADMIN);
     }
 }

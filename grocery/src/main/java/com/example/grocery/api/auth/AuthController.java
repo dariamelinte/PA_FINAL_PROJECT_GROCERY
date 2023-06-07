@@ -8,6 +8,7 @@ import com.example.grocery.api.user.UserService;
 import com.example.grocery.utils.JwtUtils;
 import com.example.grocery.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,9 +35,12 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<Response<User>> logout(@RequestHeader("Authorization") String bearerToken) {
-        ResponseEntity<Response<User>> unauthorizedResponse = jwtUtils.getNonAuthorizedResponse(bearerToken);
-        if (unauthorizedResponse != null) {
-            return unauthorizedResponse;
+        if (!jwtUtils.isUserAuthorized(bearerToken)) {
+            Response<User> response = new Response<>();
+            response.setStatus(HttpStatus.UNAUTHORIZED);
+            response.setMessage("Invalid JWT");
+
+            return new ResponseEntity<>(response, response.getStatus());
         }
 
         Response<User> response = authService.logout(bearerToken);
