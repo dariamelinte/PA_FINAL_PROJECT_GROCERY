@@ -1,8 +1,10 @@
 package com.example.grocery.api.tranzaction;
+import com.example.grocery.utils.Response;
 import org.bson.types.ObjectId;
 import com.example.grocery.api.productGroceries.ProductGroceries;
 import com.example.grocery.api.productGroceries.ProductGroceriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,6 +12,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.example.grocery.utils.Messages.*;
 
 @Service
 public class TranzactionService {
@@ -20,40 +24,53 @@ public class TranzactionService {
     @Autowired
     private ProductGroceriesRepository productGroceriesRepository;
 
-    void create(TranzactionDTO tranzactionDTO) {
+    
+    Response<Tranzaction> create(TranzactionDTO tranzactionDTO) {
+        Response<Tranzaction> response = new Response<>();
         tranzactionRepository.save(TranzactionMapper.dtoToEntity(tranzactionDTO));
+
+        response.setStatus(HttpStatus.CREATED);
+        response.setMessage(createSuccessful("Tranzaction"));
+        return response;
     }
 
-    List<Tranzaction> getAll() {
-        return tranzactionRepository.findAll();
+    Response<List<Tranzaction>> getAll() {
+        Response<List<Tranzaction>> response = new Response<>();
+        List<Tranzaction> tranzactions = tranzactionRepository.findAll();
+
+        response.setStatus(HttpStatus.OK);
+        response.setMessage(fetchSuccessful("Tranzaction"));
+        response.setData(tranzactions);
+        return response;
     }
-    List<Tranzaction> getByDateAndUser(String userid, Date startDate, Date endDate) {
-        return tranzactionRepository.findByDateAndUser(userid, startDate, endDate);
-    }
 
-    List<Tranzaction> getByDateAndGrocery(String groceryId, Date startDate, Date endDate) {
-        var tranzactions = new ArrayList<ObjectId>();
+    Response<Tranzaction> getById(String id) {
+        Response<Tranzaction> response = new Response<>();
+        Tranzaction tranzaction = tranzactionRepository.findById(id).orElse(null);
 
-        var productGroceriesList = productGroceriesRepository.findByGroceryId(groceryId).stream()
-                .map(ProductGroceries::getId)
-                .collect(Collectors.toList());
-
-        var hashSet = new HashSet<Tranzaction>();
-        for(var pg: productGroceriesList){
-            System.out.println(pg);
-            hashSet.addAll(tranzactionRepository.findByDateAndGrocery(pg, startDate, endDate));
+        if (tranzaction == null) {
+            response.setStatus(HttpStatus.CONFLICT);
+            response.setMessage(nonExistingResource("tranzaction"));
+            return response;
         }
 
-        return hashSet.stream().toList();
+
+        response.setStatus(HttpStatus.OK);
+        response.setMessage(fetchSuccessful("Tranzaction"));
+        response.setData(tranzaction);
+        return response;
     }
 
-    Tranzaction getById(String id) {
-        return tranzactionRepository.findById(id).orElse(null);
-    }
+    Response<Tranzaction> update(String id, TranzactionDTO tranzactionDTO, Boolean override){
+        Response<Tranzaction> response = new Response<>();
 
-    void update(String id, TranzactionDTO tranzactionDTO, Boolean override){
-        Tranzaction oldTranzaction = this.getById(id);
-        if (oldTranzaction == null) return;
+        Tranzaction oldTranzaction = tranzactionRepository.findById(id).orElse(null);
+
+        if (oldTranzaction == null) {
+            response.setStatus(HttpStatus.CONFLICT);
+            response.setMessage(nonExistingResource("tranzaction"));
+            return response;
+        }
 
         if (Boolean.TRUE.equals(override) || tranzactionDTO.getUserId() != null) {
             oldTranzaction.setUserId(tranzactionDTO.getUserId());
@@ -72,10 +89,67 @@ public class TranzactionService {
         }
 
         tranzactionRepository.save(oldTranzaction);
+
+        Tranzaction tranzaction = tranzactionRepository.findById(id).orElse(null);
+        response.setStatus(HttpStatus.OK);
+        response.setMessage(updateSuccessful("Tranzaction"));
+        response.setData(tranzaction);
+
+        return response;
     }
 
-    void delete(String id){
-        Tranzaction tranzaction = this.getById(id);
+    Response<List<Tranzaction>> getByDateAndUser(String userid, Date startDate, Date endDate) {
+        Response<List<Tranzaction>> response = new Response<>();
+
+        List<Tranzaction> tranzactions = tranzactionRepository.findByDateAndUser(userid, startDate, endDate);
+
+        if (tranzactions == null || tranzactions.isEmpty()) {
+            response.setStatus(HttpStatus.NOT_FOUND);
+            response.setMessage(nonExistingResource("tranzaction"));
+            return response;
+        }
+
+        response.setStatus(HttpStatus.OK);
+        response.setMessage(fetchSuccessful("Tranzaction"));
+        response.setData(tranzactions);
+        return response;
+    }
+
+    Response<List<Tranzaction>> getByDateAndGrocery(String groceryId, Date startDate, Date endDate) {
+        Response<List<Tranzaction>> response = new Response<>();
+
+        var productGroceriesList = productGroceriesRepository.findByGroceryId(groceryId).stream()
+                .map(ProductGroceries::getId)
+                .toList();
+
+        var hashSet = new HashSet<Tranzaction>();
+        for(var pg: productGroceriesList){
+            System.out.println(pg);
+            hashSet.addAll(tranzactionRepository.findByDateAndGrocery(pg, startDate, endDate));
+        }
+
+        response.setStatus(HttpStatus.OK);
+        response.setMessage(fetchSuccessful("Tranzactions"));
+        response.setData(hashSet.stream().toList());
+
+        return response;
+    }
+
+    Response<Tranzaction> delete(String id){
+        Response<Tranzaction> response = new Response<>();
+        Tranzaction tranzaction = tranzactionRepository.findById(id).orElse(null);
+
+        if (tranzaction == null) {
+            response.setStatus(HttpStatus.CONFLICT);
+            response.setMessage(nonExistingResource("tranzaction"));
+            return response;
+        }
+
         tranzactionRepository.delete(tranzaction);
+
+        tranzaction = tranzactionRepository.findById(id).orElse(null);
+        response.setStatus(tranzaction != null ? HttpStatus.INTERNAL_SERVER_ERROR :HttpStatus.OK);
+        response.setMessage(tranzaction != null ? somethingWentWrong : deleteSuccessful("Tranzaction"));
+        return response;
     }
 }

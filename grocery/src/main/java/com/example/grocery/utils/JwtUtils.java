@@ -3,6 +3,8 @@ package com.example.grocery.utils;
 import com.example.grocery.api.grocery.Grocery;
 import com.example.grocery.api.grocery.GroceryRepository;
 import com.example.grocery.api.grocery.GroceryService;
+import com.example.grocery.api.tranzaction.Tranzaction;
+import com.example.grocery.api.tranzaction.TranzactionRepository;
 import com.example.grocery.api.productGroceries.ProductGroceries;
 import com.example.grocery.api.productGroceries.ProductGroceriesRepository;
 import com.example.grocery.api.user.User;
@@ -31,6 +33,8 @@ public class JwtUtils {
     UserRepository userRepository;
     @Autowired
     GroceryRepository groceryRepository;
+    @Autowired
+    TranzactionRepository tranzactionRepository;
     @Autowired
     ProductGroceriesRepository productGroceriesRepository;
     private final String key = "grocery_jwt_key";
@@ -154,5 +158,19 @@ public class JwtUtils {
         }
 
         return Objects.equals(user.getId(), userId);
+    }
+
+    public boolean isTranzactionAuthorized(String tranzactionId, String bearerToken) {
+        if (isRoleAuthorized(bearerToken, RoleType.ADMIN)) {
+            return true;
+        }
+
+        User user = userRepository.findById(getUserIdFromJwtToken(bearerToken)).orElse(null);
+        Tranzaction tranzaction = tranzactionRepository.findById(tranzactionId).orElse(null);
+        if (user == null || tranzaction == null) {
+            return false;
+        }
+
+        return Objects.equals(user.getId(), tranzaction.getUserId());
     }
 }
