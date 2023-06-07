@@ -3,6 +3,8 @@ package com.example.grocery.utils;
 import com.example.grocery.api.grocery.Grocery;
 import com.example.grocery.api.grocery.GroceryRepository;
 import com.example.grocery.api.grocery.GroceryService;
+import com.example.grocery.api.productGroceries.ProductGroceries;
+import com.example.grocery.api.productGroceries.ProductGroceriesRepository;
 import com.example.grocery.api.user.User;
 import com.example.grocery.api.user.UserRepository;
 import com.example.grocery.api.user.UserService;
@@ -29,6 +31,8 @@ public class JwtUtils {
     UserRepository userRepository;
     @Autowired
     GroceryRepository groceryRepository;
+    @Autowired
+    ProductGroceriesRepository productGroceriesRepository;
     private final String key = "grocery_jwt_key";
 
     public String generateToken(String userId) {
@@ -106,8 +110,8 @@ public class JwtUtils {
     }
 
     public boolean isGroceryAuthorized(String groceryId, String bearerToken) {
-        if (!isRoleAuthorized(bearerToken, RoleType.ADMIN)) {
-            return false;
+        if (isRoleAuthorized(bearerToken, RoleType.ADMIN)) {
+            return true;
         }
 
         User user = userRepository.findById(getUserIdFromJwtToken(bearerToken)).orElse(null);
@@ -116,6 +120,24 @@ public class JwtUtils {
         if (user == null || grocery == null) {
             return false;
         }
+
+        return Objects.equals(grocery.getUserId(), user.getId());
+    }
+
+    public boolean isProductGroceryAuthorize(String bearerToken, String productGroceryId){
+        if (isRoleAuthorized(bearerToken, RoleType.ADMIN)) {
+            return true;
+        }
+
+        ProductGroceries productGrocery = productGroceriesRepository.findById(productGroceryId).orElse(null);
+        if(productGrocery == null) return false;
+
+        var groceryId = productGrocery.getGroceryId();
+        Grocery grocery = groceryRepository.findById(groceryId).orElse(null);
+        if(grocery == null) return false;
+
+        User user = userRepository.findById(getUserIdFromJwtToken(bearerToken)).orElse(null);
+        if(user == null) return false;
 
         return Objects.equals(grocery.getUserId(), user.getId());
     }
