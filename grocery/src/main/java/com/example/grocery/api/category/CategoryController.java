@@ -2,6 +2,7 @@ package com.example.grocery.api.category;
 
 import com.example.grocery.api.user.User;
 import com.example.grocery.api.user.UserDTO;
+import com.example.grocery.enums.RoleType;
 import com.example.grocery.utils.JwtUtils;
 import com.example.grocery.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class CategoryController {
         @RequestHeader("Authorization") String bearerToken,
         @RequestBody CategoryDTO dto
     ) {
-        if (!jwtUtils.isAdminAuthorized(bearerToken)) {
+        if (!jwtUtils.isRoleAuthorized(bearerToken, RoleType.ADMIN)) {
             Response<Category> response = new Response<>();
             response.setStatus(HttpStatus.UNAUTHORIZED);
             response.setMessage(noAccessAllowed);
@@ -54,7 +55,7 @@ public class CategoryController {
             @RequestHeader("Authorization") String bearerToken,
             @PathVariable String id,
             @RequestBody CategoryDTO dto){
-        if (!jwtUtils.isAdminAuthorized(bearerToken)) {
+        if (!jwtUtils.isRoleAuthorized(bearerToken, RoleType.ADMIN)) {
             Response<Category> response = new Response<>();
             response.setStatus(HttpStatus.UNAUTHORIZED);
             response.setMessage(noAccessAllowed);
@@ -70,7 +71,7 @@ public class CategoryController {
     public ResponseEntity<Response<Category>> delete(
             @RequestHeader("Authorization") String bearerToken,
             @PathVariable String id){
-        if (!jwtUtils.isAdminAuthorized(bearerToken)) {
+        if (!jwtUtils.isRoleAuthorized(bearerToken, RoleType.ADMIN)) {
             Response<Category> response = new Response<>();
             response.setStatus(HttpStatus.UNAUTHORIZED);
             response.setMessage(noAccessAllowed);

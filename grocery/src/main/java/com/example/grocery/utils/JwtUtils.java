@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Role;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -94,18 +95,18 @@ public class JwtUtils {
         return Objects.equals(user.getJwt(), parseJwt(bearerToken));
     }
 
-    public boolean isAdminAuthorized(String bearerToken) {
+    public boolean isRoleAuthorized(String bearerToken, RoleType roleType) {
         if (!isUserAuthorized(bearerToken)) {
             return false;
         }
 
         User user = userRepository.findById(getUserIdFromJwtToken(bearerToken)).orElse(null);
 
-        return user.getRoles().contains(RoleType.ADMIN);
+        return user.getRoles().contains(roleType);
     }
 
     public boolean isGroceryAuthorized(String groceryId, String bearerToken) {
-        if (!isAdminAuthorized(bearerToken)) {
+        if (!isRoleAuthorized(bearerToken, RoleType.ADMIN)) {
             return false;
         }
 
